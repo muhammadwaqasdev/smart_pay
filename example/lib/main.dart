@@ -44,7 +44,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         amountMinorUnits: 1999,
         currency: 'USD',
         description: 'SmartPay Demo Order #1001',
-        flowMode: PaymentFlowMode.inPackage,
+        flowMode: PaymentFlowMode.testing,
       ),
     );
     setState(() => _lastResult = result.toString());
