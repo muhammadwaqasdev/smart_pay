@@ -57,7 +57,9 @@ smart_pay lets you register multiple payment providers (starting with Stripe) an
 - Show enabled methods with `SmartPayMethods`
 - Checkout using the selected method with `SmartPay.checkout`
 - Simple provider contract `PaymentProviderPlugin` to add gateways
-- Stripe PaymentSheet built-in (client-secret via backend or in-package REST)
+- **Stripe PaymentSheet** built-in (in-app payment UI)
+- **Stripe Payment Links** built-in (redirect to external Stripe-hosted pages)
+- Provider-driven mode selection (Payment Sheet vs Payment Link)
 - Store holds config and current selection
 
 ## Installation
@@ -87,7 +89,7 @@ Stripe requires minimal platform configuration.
 Refer to Stripe plugin docs if you encounter platform issues.
 
 ## Quick start
-Configure Stripe and present the methods widget.
+Configure Stripe providers with different modes. The package automatically generates payment links and intents for you!
 
 ```dart
 import 'package:smart_pay/smart_pay.dart';
@@ -96,19 +98,22 @@ void main() {
   SmartPay.configure(
     SmartPayConfig(
       providers: [
-        // Option A: In-package REST creation (dev/sandbox only)
-        StripeProvider(
+        // Payment Sheet provider (in-app payment UI)
+        StripeProvider.paymentSheet(
           publishableKey: 'pk_test_...',
-          secretKey: 'sk_test_...',
+          secretKey: 'sk_test_...',  // Required for testing mode
         ),
-        // Option B (prod): get client secret from your backend
-        // StripeProvider(
-        //   publishableKey: 'pk_live_...',
-        //   createPaymentSheet: (req) async => StripePaymentSheetConfig(
-        //     paymentIntentClientSecret: await MyApi.createIntent(req),
-        //     merchantDisplayName: 'My Store',
-        //   ),
-        // ),
+        
+        // Payment Link provider (automatically generates links)
+        StripeProvider.paymentLink(
+          publishableKey: 'pk_test_...',
+          secretKey: 'sk_test_...',  // Required for creating payment links
+          paymentLinkConfig: StripePaymentLinkConfig(
+            successUrl: 'https://yourapp.com/success',
+            cancelUrl: 'https://yourapp.com/cancel',
+            allowPromotionCodes: true,
+          ),
+        ),
       ],
     ),
   );
@@ -117,22 +122,40 @@ void main() {
 
 Render methods and checkout:
 ```dart
-// UI list of methods
+// UI list of methods (each provider determines its own behavior)
 SmartPayMethods(
-store: SmartPay.store,
-onMethodSelected: (provider) => print('selected: ${provider.id}'),
+  store: SmartPay.store,
+  onMethodSelected: (provider) {
+    // Each provider can be Payment Sheet or Payment Link
+    if (provider is StripeProvider) {
+      print('Selected ${provider.mode == StripeMode.paymentSheet ? "Payment Sheet" : "Payment Link"}');
+    }
+  },
 );
 
-// Later: checkout with desired flow mode
+// Single checkout method works with all provider modes
 final result = await SmartPay.checkout(
-const PayRequest(
-amountMinorUnits: 4999,
-currency: 'USD',
-description: 'Order #1001',
-flowMode: PaymentFlowMode.auto, // backend if available, else in-package
-),
+  const PayRequest(
+    amountMinorUnits: 4999,
+    currency: 'USD',
+    description: 'Order #1001',
+    flowMode: PaymentFlowMode.testing, // or PaymentFlowMode.production
+  ),
 );
-print(result);
+
+// Handle the result
+if (result.success) {
+  if (result.paymentUrl != null) {
+    // Manual URL handling - you get the URL to handle yourself
+    print('Payment URL: ${result.paymentUrl}');
+    // Open in custom WebView, custom browser, etc.
+  } else {
+    // Auto redirect completed or Payment Sheet finished
+    print('Payment completed: ${result.message}');
+  }
+} else {
+  print('Payment failed: ${result.message}');
+}
 ```
 
 ## API
@@ -146,33 +169,64 @@ print(result);
   - Implement `id`, `pay()` to add a gateway
 - Models
   - `PayRequest { amountMinorUnits, currency, description?, metadata?, flowMode }`
-  - `PaymentResult { success, providerId, transactionId?, message?, raw? }`
-  - `PaymentFlowMode { auto, backend, inPackage }`
+  - `PaymentResult { success, providerId, transactionId?, message?, raw?, paymentUrl? }`
+  - `PaymentFlowMode { testing, production }`
+  - `UrlHandlingMode { autoRedirect, manual }`
 
-### Stripe provider
+### Stripe providers
+
+#### Payment Sheet (In-app UI)
 ```dart
-StripeProvider(
-publishableKey: 'pk_...',
-// Choose one
-secretKey: 'sk_test_...', // in-package REST (dev/sandbox)
-// or
-// createPaymentSheet: (req) async => StripePaymentSheetConfig(
-//   paymentIntentClientSecret: await MyApi.createIntent(req),
-//   merchantDisplayName: 'My Store',
-// ),
+// Testing mode - package creates payment intents automatically
+StripeProvider.paymentSheet(
+  publishableKey: 'pk_test_...',
+  secretKey: 'sk_test_...',  // Required for testing mode
+)
+
+// Production mode - use your backend callback
+StripeProvider.paymentSheet(
+  publishableKey: 'pk_live_...',
+  createPaymentSheet: (req) async => StripePaymentSheetConfig(
+    paymentIntentClientSecret: await MyApi.createIntent(req),
+    merchantDisplayName: 'My Store',
+  ),
+)
+```
+
+#### Payment Link (External redirect)
+```dart
+StripeProvider.paymentLink(
+  publishableKey: 'pk_test_...',
+  secretKey: 'sk_test_...', // Required for creating payment links
+  paymentLinkConfig: StripePaymentLinkConfig(
+    successUrl: 'myapp://payment/success',
+    cancelUrl: 'myapp://payment/cancel',
+    allowPromotionCodes: true,
+    urlHandlingMode: UrlHandlingMode.autoRedirect, // autoRedirect: Auto open in browser / manual: Return URL for manual handling
+    customerCreation: PaymentLinkCustomerCollection.always,
+    metadata: {'source': 'mobile_app'},
+  ),
 )
 ```
 
 ## Examples
 See `example/` for a minimal app with method selection and checkout.
 
+### Running the Example
+1. Copy the environment template: `cp example/.env.example example/.env`
+2. Add your Stripe test keys to `example/.env`
+3. Run: `cd example && flutter run`
+
+See `example/README.md` for detailed setup instructions.
+
 ## Roadmap (Coming Soon)
 
 ### Gateways
+- [x] Stripe PaymentSheet
+- [x] Stripe Payment Links
 - [ ] Razorpay (Standard Checkout)
-- [ ] Paystack (Standard Checkout)
+- [ ] Paystack (Standard Checkout)  
 - [ ] PayPal (URL + SDK flows)
-- [ ] Stripe Link
 
 ### Wallets
 - [ ] Apple Pay (via Stripe PaymentSheet)
@@ -184,10 +238,34 @@ See `example/` for a minimal app with method selection and checkout.
 - [ ] More examples and cookbook
 
 ## FAQ
-- Why not include secrets in production?
+
+### General
+- **Why not include secrets in production?**
   - Keep server secrets on your backend; in-package REST is for local/dev only.
-- Can I add my own provider?
+- **Can I add my own provider?**
   - Yes, implement `PaymentProviderPlugin` and register it in `SmartPay.configure`.
+
+### Payment Links
+- **When should I use Payment Links vs Payment Sheet?**
+  - Use Payment Sheet for seamless in-app payments. Use Payment Links when you need Stripe's hosted checkout experience or want to minimize integration complexity.
+- **Do I need to create Payment Links manually in Stripe?**
+  - No! The package automatically generates payment links based on your PayRequest. Just provide your secret key and the package handles the rest.
+- **How do I handle payment completion with Payment Links?**
+  - Set up success/cancel URLs and use webhooks for reliable payment confirmation. Payment Links redirect externally, so the `PaymentResult` only indicates if the link was opened successfully.
+- **Can I have both Payment Sheet and Payment Link providers?**
+  - Yes! Configure multiple providers and let users choose their preferred payment method.
+
+### Configuration
+- **How does the provider mode selection work?**
+  - Each provider is configured with a specific mode (Payment Sheet or Payment Link) during setup. The checkout method automatically uses the appropriate flow based on the selected provider.
+
+### URL Handling
+- **What's the difference between auto redirect and manual URL handling?**
+  - Auto redirect (`UrlHandlingMode.autoRedirect`) automatically opens the payment URL in the external browser. Manual (`UrlHandlingMode.manual`) returns the URL in `PaymentResult.paymentUrl` for you to handle (custom WebView, in-app browser, etc.).
+- **When should I use manual URL handling?**
+  - Use manual when you want to control the user experience (custom WebView, specific browser, custom UI, etc.). Use auto redirect for the simplest integration.
+- **Does this apply to other payment systems?**
+  - Yes! This URL handling pattern will be used for all future URL-based payment systems (PayPal, etc.).
 
 ## Contributing
 PRs and issues are welcome. See the full guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).

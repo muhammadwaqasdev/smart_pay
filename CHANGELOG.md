@@ -1,3 +1,12 @@
+## 0.1.0
+
+- **StripeProvider enhancements**
+  - Added support for Payment Link.
+- Improved integration flexibility with Stripe.
+- Minor internal improvements and code cleanup.
+
+---
+
 ## 0.0.1
 
 - Initial release: core API `SmartPay.configure`, `SmartPayMethods` widget, and `SmartPay.checkout`.

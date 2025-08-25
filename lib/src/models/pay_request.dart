@@ -21,6 +21,6 @@ class PayRequest {
     required this.currency,
     this.description,
     this.metadata,
-    this.flowMode = PaymentFlowMode.auto,
+    this.flowMode = PaymentFlowMode.testing,
   });
 }

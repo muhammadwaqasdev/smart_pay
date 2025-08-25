@@ -1,23 +1,36 @@
 name: smart_pay
-description: A unified Flutter payments toolkit. Configure gateways (Stripe now; more soon), render a single methods widget, and checkout via one API.
-version: 0.0.1
+description: Unified Flutter payments toolkit supporting Stripe Payment Sheets and Payment Links with automatic URL generation, manual handling, and provider-driven configuration.
+version: 0.1.0
 repository: https://github.com/muhammadwaqasdev/smart_pay
 issue_tracker: https://github.com/muhammadwaqasdev/smart_pay/issues
 homepage: https://github.com/muhammadwaqasdev/smart_pay
+documentation: https://github.com/muhammadwaqasdev/smart_pay/blob/main/README.md
 
 environment:
-  sdk: ^3.4.0
-  flutter: ">=3.22.0"
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+topics:
+  - payments
+  - stripe
+  - flutter
+  - payment-processing
+  - payment-gateway
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_stripe: ^11.5.0
   http: ^1.5.0
-
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+
+platforms:
+  android:
+  ios:
+  web:
 

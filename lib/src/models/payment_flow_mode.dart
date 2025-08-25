@@ -1,10 +1,7 @@
 enum PaymentFlowMode {
-  /// Choose backend if callbacks provided; otherwise attempt in-package if possible.
-  auto,
-
-  /// Force using backend-provided flow (e.g., your server creates intents/orders).
-  backend,
-
-  /// Force testing REST flow (only recommended for dev/sandbox).
+  /// Testing mode - uses test keys and creates payment intents/links automatically
   testing,
+
+  /// Production mode - uses your backend callbacks for security
+  production,
 }

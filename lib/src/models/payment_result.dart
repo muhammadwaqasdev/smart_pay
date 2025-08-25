@@ -5,12 +5,16 @@ class PaymentResult {
   final String? message;
   final Map<String, Object?>? raw;
 
+  /// The payment URL (only present for URL-based payments with manual handling)
+  final String? paymentUrl;
+
   const PaymentResult({
     required this.success,
     required this.providerId,
     this.transactionId,
     this.message,
     this.raw,
+    this.paymentUrl,
   });
 
   factory PaymentResult.success({
@@ -18,6 +22,7 @@ class PaymentResult {
     String? transactionId,
     String? message,
     Map<String, Object?>? raw,
+    String? paymentUrl,
   }) {
     return PaymentResult(
       success: true,
@@ -25,6 +30,7 @@ class PaymentResult {
       transactionId: transactionId,
       message: message,
       raw: raw,
+      paymentUrl: paymentUrl,
     );
   }
 
@@ -32,12 +38,14 @@ class PaymentResult {
     required String providerId,
     String? message,
     Map<String, Object?>? raw,
+    String? paymentUrl,
   }) {
     return PaymentResult(
       success: false,
       providerId: providerId,
       message: message,
       raw: raw,
+      paymentUrl: paymentUrl,
     );
   }
 
