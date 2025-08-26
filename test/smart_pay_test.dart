@@ -6,6 +6,9 @@ class _DummyProvider extends PaymentProviderPlugin {
   String get id => 'dummy';
 
   @override
+  PaymentMode get mode => PaymentMode.SDK;
+
+  @override
   Future<PaymentResult> pay(PayRequest request) async =>
       PaymentResult.success(providerId: id, transactionId: 'tx');
 }
@@ -13,6 +16,9 @@ class _DummyProvider extends PaymentProviderPlugin {
 class _FailingProvider extends PaymentProviderPlugin {
   @override
   String get id => 'failing';
+
+  @override
+  PaymentMode get mode => PaymentMode.URL;
 
   @override
   Future<PaymentResult> pay(PayRequest request) async =>
@@ -119,9 +125,9 @@ void main() {
     });
   });
 
-  group('StripePaymentLinkConfig', () {
+  group('StripeURLConfig', () {
     test('creates config with defaults', () {
-      const config = StripePaymentLinkConfig();
+      const config = StripeURLConfig();
 
       expect(config.urlHandlingMode, UrlHandlingMode.autoRedirect);
       expect(config.allowPromotionCodes, false);
@@ -129,7 +135,7 @@ void main() {
     });
 
     test('creates config with custom values', () {
-      const config = StripePaymentLinkConfig(
+      const config = StripeURLConfig(
         successUrl: 'https://success.com',
         cancelUrl: 'https://cancel.com',
         allowPromotionCodes: true,

@@ -1,8 +1,8 @@
 /// Stripe-specific payment modes
 enum StripeMode {
-  /// Use Payment Sheet (in-app payment UI)
-  paymentSheet,
+  /// Use SDK (in-app payment UI)
+  SDK,
 
-  /// Use Payment Links (redirect to external Stripe-hosted page)
-  paymentLink,
+  /// Use URL (redirect to external Stripe-hosted page)
+  URL,
 }

@@ -1,6 +1,6 @@
 import 'url_handling_mode.dart';
 
-class StripePaymentLinkConfig {
+class StripeURLConfig {
   /// Custom success URL to redirect to after successful payment
   final String? successUrl;
 
@@ -11,7 +11,7 @@ class StripePaymentLinkConfig {
   final bool allowPromotionCodes;
 
   /// Collect customer information
-  final PaymentLinkCustomerCollection? customerCreation;
+  final URLCustomerCollection? customerCreation;
 
   /// Metadata to attach to the payment
   final Map<String, String>? metadata;
@@ -19,7 +19,7 @@ class StripePaymentLinkConfig {
   /// How to handle the payment URL (auto redirect or return for manual handling)
   final UrlHandlingMode urlHandlingMode;
 
-  const StripePaymentLinkConfig({
+  const StripeURLConfig({
     this.successUrl,
     this.cancelUrl,
     this.allowPromotionCodes = false,
@@ -29,7 +29,7 @@ class StripePaymentLinkConfig {
   });
 }
 
-enum PaymentLinkCustomerCollection {
+enum URLCustomerCollection {
   /// Always collect customer information
   always,
 
@@ -37,13 +37,13 @@ enum PaymentLinkCustomerCollection {
   ifRequired,
 }
 
-class PaymentLinkCustomField {
+class URLCustomField {
   final String key;
-  final PaymentLinkCustomFieldType type;
+  final URLCustomFieldType type;
   final String label;
   final bool optional;
 
-  const PaymentLinkCustomField({
+  const URLCustomField({
     required this.key,
     required this.type,
     required this.label,
@@ -51,7 +51,7 @@ class PaymentLinkCustomField {
   });
 }
 
-enum PaymentLinkCustomFieldType {
+enum URLCustomFieldType {
   dropdown,
   numeric,
   text,

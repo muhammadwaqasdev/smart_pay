@@ -1,5 +1,6 @@
 import '../models/pay_request.dart';
 import '../models/payment_result.dart';
+import '../models/payment_mode.dart';
 
 /// Contract for payment provider plugins (Stripe, PayPal, Razorpay, etc.)
 abstract class PaymentProviderPlugin {
@@ -8,6 +9,9 @@ abstract class PaymentProviderPlugin {
 
   /// Display name for UI purposes. Defaults to [id] when not overridden.
   String get displayName => id;
+
+  /// Payment processing mode (SDK or URL)
+  PaymentMode get mode;
 
   /// Whether this provider is enabled. Widgets will only show enabled providers.
   bool get isEnabled => true;

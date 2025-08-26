@@ -20,26 +20,28 @@ Future<void> main() async {
     );
   }
 
+  // Configure Smart Pay with payment methods
   SmartPay.configure(
     SmartPayConfig(
       providers: [
-        // Payment Sheet provider (in-app payment UI)
-        StripeProvider.paymentSheet(
+        // Stripe provider with custom name
+        StripeProvider(
           publishableKey: publishableKey,
-          secretKey: secretKey, // Required for testing mode
+          secretKey: secretKey,
+          displayName: 'Credit Card',
         ),
 
-        // Payment Link provider (external redirect)
-        StripeProvider.paymentLink(
+        // Another Stripe provider for web payments
+        StripeProvider(
           publishableKey: publishableKey,
-          secretKey: secretKey, // Required for creating payment links
-          paymentLinkConfig: StripePaymentLinkConfig(
+          secretKey: secretKey,
+          displayName: 'Pay Online',
+          mode: PaymentMode.URL, // Force web payment
+          urlConfig: StripeURLConfig(
             successUrl: 'https://example.com/success',
             cancelUrl: 'https://example.com/cancel',
             allowPromotionCodes: true,
-            urlHandlingMode:
-                UrlHandlingMode.manual, // Return URL for manual handling
-            metadata: {'source': 'mobile_app'},
+            urlHandlingMode: UrlHandlingMode.manual,
           ),
         ),
       ],
@@ -55,40 +57,235 @@ class SmartPayExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SmartPay Example',
+      title: 'Smart Pay Example',
       theme: ThemeData(colorSchemeSeed: Colors.blue, useMaterial3: true),
-      home: const ExampleHomePage(),
+      home: const CheckoutScreen(),
     );
   }
 }
 
-class ExampleHomePage extends StatefulWidget {
-  const ExampleHomePage({super.key});
+class CheckoutScreen extends StatefulWidget {
+  const CheckoutScreen({super.key});
 
   @override
-  State<ExampleHomePage> createState() => _ExampleHomePageState();
+  State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
-class _ExampleHomePageState extends State<ExampleHomePage> {
-  String? _lastResult;
+class _CheckoutScreenState extends State<CheckoutScreen> {
+  bool _isLoading = false;
 
-  Future<void> _pay() async {
-    final result = await SmartPay.checkout(
-      const PayRequest(
-        amountMinorUnits: 1999,
-        currency: 'USD',
-        description: 'SmartPay Demo Order #1001',
-        flowMode: PaymentFlowMode.testing,
+  @override
+  Widget build(BuildContext context) {
+    // Get platform info for display
+    final platformInfo = PlatformDetector.getPlatformDefaults();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Smart Pay Checkout'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Platform info card
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Platform: ${platformInfo['platform']}',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Default Mode: ${platformInfo['defaultMode']}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    Text(
+                      'SDK Support: ${platformInfo['supportsSdk'] ? 'Yes' : 'No'}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Payment methods section
+            Text(
+              'Choose Payment Method',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 16),
+
+            // Smart Pay Methods widget
+            SmartPayMethods(
+              store: SmartPay.store,
+              onMethodSelected: (provider) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Selected: ${provider.displayName}'),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 32),
+
+            // Order summary
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Order Summary',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [Text('Smart Pay Demo Item'), Text('\$19.99')],
+                    ),
+                    const Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(
+                          '\$19.99',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Pay button
+            FilledButton(
+              onPressed: _isLoading ? null : _processPayment,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Pay \$19.99', style: TextStyle(fontSize: 16)),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Help text
+            Text(
+              'This is a demo app. No real charges will be made.',
+              textAlign: TextAlign.center,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+            ),
+          ],
+        ),
       ),
     );
-    log(result.toString());
+  }
 
-    // Handle manual URL result
-    if (result.success && result.paymentUrl != null) {
-      _showPaymentUrlDialog(result.paymentUrl!);
+  Future<void> _processPayment() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await SmartPay.checkout(
+        const PayRequest(
+          amountMinorUnits: 1999, // $19.99
+          currency: 'USD',
+          description: 'Smart Pay Demo Purchase',
+          flowMode: PaymentFlowMode.testing,
+        ),
+      );
+
+      // Log the result for debugging
+      log('Payment result: ${result.toString()}');
+
+      // Handle payment URL if present (for URL-based payments)
+      if (result.success && result.paymentUrl != null) {
+        _showPaymentUrlDialog(result.paymentUrl!);
+      } else {
+        // Show result dialog
+        _showResultDialog(result);
+      }
+    } catch (e) {
+      log('Payment error: $e');
+      _showResultDialog(
+        PaymentResult.failure(
+          providerId: 'unknown',
+          message: 'Payment failed: $e',
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
+  }
 
-    setState(() => _lastResult = result.toString());
+  void _showResultDialog(PaymentResult result) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Icon(
+          result.success ? Icons.check_circle : Icons.error,
+          color: result.success ? Colors.green : Colors.red,
+          size: 48,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              result.success ? 'Payment Successful!' : 'Payment Failed',
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              result.message ?? 'No additional information',
+              textAlign: TextAlign.center,
+            ),
+            if (result.transactionId != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Transaction ID: ${result.transactionId}',
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showPaymentUrlDialog(String paymentUrl) {
@@ -99,14 +296,17 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Payment URL has been generated for manual handling:'),
+            const Text('A payment URL was generated for manual handling:'),
             const SizedBox(height: 12),
-            SelectableText(
-              paymentUrl,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 12,
-                color: Colors.blue,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: SelectableText(
+                paymentUrl,
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
               ),
             ),
           ],
@@ -116,100 +316,19 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Close'),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () {
-              // Here you can implement your own URL handling logic
-              // For example, open in custom WebView, use custom browser, etc.
               Navigator.of(context).pop();
+              // Here you would implement your URL handling logic
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Implement your custom URL handling here!'),
+                  content: Text('Implement custom URL handling here!'),
                 ),
               );
             },
-            child: const Text('Handle Manually'),
+            child: const Text('Handle URL'),
           ),
         ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('SmartPay Example')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'SmartPay Dynamic Providers',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Select a payment method. Each provider is configured with its own mode (Payment Sheet or Payment Link).',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-
-            SmartPayMethods(
-              store: SmartPay.store,
-              onMethodSelected: (provider) {
-                // Get the Stripe provider and show its mode
-                if (provider is StripeProvider) {
-                  final mode = provider.mode == StripeMode.paymentSheet
-                      ? 'Payment Sheet'
-                      : 'Payment Link';
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Selected Stripe provider in $mode mode'),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                }
-                debugPrint('Selected provider: ${provider.id}');
-              },
-            ),
-
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _pay,
-                child: const Text('Pay \$19.99'),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-            const Text(
-              'Payment Links configured with manual URL handling will return the URL for you to handle (WebView, custom browser, etc.). Auto redirect will open the default browser.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-
-            if (_lastResult != null) ...[
-              const SizedBox(height: 24),
-              const Text(
-                'Last Result:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  _lastResult!,
-                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
-                ),
-              ),
-            ],
-          ],
-        ),
       ),
     );
   }
