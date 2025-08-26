@@ -1,18 +1,37 @@
 <h1 align="center">Smart Pay</h1>
 
-<p align="center">One simple API for all payment methods in Flutter</p>
+<p align="center">Unified payments for Flutter with a single API. Configure Stripe today, more gateways soon, and present a unified checkout experience.</p><br>
 
 <p align="center">
   <a href="https://flutter.dev">
-    <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter" alt="Platform" />
+    <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter"
+      alt="Platform" />
   </a>
   <a href="https://pub.dartlang.org/packages/smart_pay">
-    <img src="https://img.shields.io/pub/v/smart_pay.svg" alt="Pub Package" />
+    <img src="https://img.shields.io/pub/v/smart_pay.svg"
+      alt="Pub Package" />
   </a>
   <a href="LICENSE">
-    <img src="https://img.shields.io/github/license/muhammadwaqasdev/smart_pay?color=red" alt="License: MIT" />
+    <img src="https://img.shields.io/github/license/muhammadwaqasdev/smart_pay?color=red"
+      alt="License: MIT" />
   </a>
-</p>
+  <a href="https://pub.dev/packages/smart_pay/score">
+    <img src="https://img.shields.io/pub/points/smart_pay?label=Pub%20Points"
+      alt="Pub Points" />
+  </a>
+  <a href="https://pub.dev/packages/smart_pay/score">
+    <img src="https://img.shields.io/pub/popularity/smart_pay?label=Popularity"
+      alt="Popularity" />
+  </a>
+  <a href="https://pub.dev/packages/smart_pay/score">
+    <img src="https://img.shields.io/pub/likes/smart_pay?label=Pub%20Likes"
+      alt="Pub Likes" />
+  </a>
+  <a href="https://pub.dev/packages/smart_pay">
+    <img src="https://img.shields.io/badge/Dart%20SDK-%3E%3D3.8-blue?logo=dart"
+      alt="Dart SDK >= 3.8" />
+  </a>
+</p><br>
 
 ## What is Smart Pay?
 
@@ -39,7 +58,7 @@ dependencies:
 
 | Payment Method | Status | Documentation |
 |---------------|---------|---------------|
-| **Stripe** | ✅ Available | [→ Stripe Setup Guide](doc/stripe.md) |
+| **Stripe** | ✅ Available | [→ Stripe Setup Guide](https://github.com/muhammadwaqasdev/smart_pay/tree/main/doc/stripe.md) |
 | **PayPal** | 🔄 Coming Soon | - |
 | **Razorpay** | 🔄 Coming Soon | - |
 | **Apple Pay** | 🔄 Coming Soon | - |
@@ -122,20 +141,20 @@ if (result.success) {
 
 ## Examples
 
-- **[Basic Example](example/)** - Simple payment setup
-- **[Stripe Guide](doc/stripe.md)** - Complete Stripe integration
-- **[Platform Detection](doc/platform-detection.md)** - How auto-detection works
+- **[Basic Example](https://github.com/muhammadwaqasdev/smart_pay/tree/main/example)** - Simple payment setup
+- **[Stripe Guide](https://github.com/muhammadwaqasdev/smart_pay/tree/main/doc/stripe.md)** - Complete Stripe integration
+- **[Platform Detection](https://github.com/muhammadwaqasdev/smart_pay/tree/main/doc/platform-detection.md)** - How auto-detection works
 
 ## Need Help?
 
-- 📖 **[Setup Guides](doc/)** - Step-by-step instructions
-- ❓ **[FAQ](doc/faq.md)** - Common questions
+- 📖 **[Setup Guides](https://github.com/muhammadwaqasdev/smart_pay/tree/main/doc/)** - Step-by-step instructions
+- ❓ **[FAQ](https://github.com/muhammadwaqasdev/smart_pay/tree/main/doc/faq.md)** - Common questions
 - 🐛 **[Issues](https://github.com/muhammadwaqasdev/smart_pay/issues)** - Report bugs
 - 💬 **[Discussions](https://github.com/muhammadwaqasdev/smart_pay/discussions)** - Get help
 
 ## What's Next?
 
-1. **[Choose your payment method](doc/)** from the table above
+1. **[Choose your payment method](https://github.com/muhammadwaqasdev/smart_pay/tree/main/doc/)** from the table above
 2. **Follow the setup guide** for your chosen method
 3. **Add more methods** as needed - they all work the same way!
 

@@ -1,3 +1,11 @@
+## 0.1.2
+
+- **Documentation Fixes**
+  - Fixed broken relative links in `README.md` (docs, examples, FAQ)
+  - Updated all links to use absolute GitHub URLs so they work on pub.dev
+
+---
+
 ## 0.1.1
 
 - Unified `StripeProvider()` constructor (removed named constructors)
