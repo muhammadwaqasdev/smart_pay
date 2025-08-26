@@ -39,7 +39,7 @@ dependencies:
 
 | Payment Method | Status | Documentation |
 |---------------|---------|---------------|
-| **Stripe** | ✅ Available | [→ Stripe Setup Guide](docs/stripe.md) |
+| **Stripe** | ✅ Available | [→ Stripe Setup Guide](doc/stripe.md) |
 | **PayPal** | 🔄 Coming Soon | - |
 | **Razorpay** | 🔄 Coming Soon | - |
 | **Apple Pay** | 🔄 Coming Soon | - |
@@ -123,19 +123,19 @@ if (result.success) {
 ## Examples
 
 - **[Basic Example](example/)** - Simple payment setup
-- **[Stripe Guide](docs/stripe.md)** - Complete Stripe integration
-- **[Platform Detection](docs/platform-detection.md)** - How auto-detection works
+- **[Stripe Guide](doc/stripe.md)** - Complete Stripe integration
+- **[Platform Detection](doc/platform-detection.md)** - How auto-detection works
 
 ## Need Help?
 
-- 📖 **[Setup Guides](docs/)** - Step-by-step instructions
-- ❓ **[FAQ](docs/faq.md)** - Common questions
+- 📖 **[Setup Guides](doc/)** - Step-by-step instructions
+- ❓ **[FAQ](doc/faq.md)** - Common questions
 - 🐛 **[Issues](https://github.com/muhammadwaqasdev/smart_pay/issues)** - Report bugs
 - 💬 **[Discussions](https://github.com/muhammadwaqasdev/smart_pay/discussions)** - Get help
 
 ## What's Next?
 
-1. **[Choose your payment method](docs/)** from the table above
+1. **[Choose your payment method](doc/)** from the table above
 2. **Follow the setup guide** for your chosen method
 3. **Add more methods** as needed - they all work the same way!
 

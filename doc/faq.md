@@ -66,10 +66,10 @@ Yes, but be careful:
 
 ```dart
 // This works on all platforms
-StripeProvider(mode: PaymentMode.URL)
+StripeProvider(mode: PaymentMode.url)
 
 // This only works on mobile (crashes on web/desktop)
-StripeProvider(mode: PaymentMode.SDK)
+StripeProvider(mode: PaymentMode.sdk)
 ```
 
 ## Stripe Questions

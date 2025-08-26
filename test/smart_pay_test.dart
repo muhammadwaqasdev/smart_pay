@@ -6,7 +6,7 @@ class _DummyProvider extends PaymentProviderPlugin {
   String get id => 'dummy';
 
   @override
-  PaymentMode get mode => PaymentMode.SDK;
+  PaymentMode get mode => PaymentMode.sdk;
 
   @override
   Future<PaymentResult> pay(PayRequest request) async =>
@@ -18,7 +18,7 @@ class _FailingProvider extends PaymentProviderPlugin {
   String get id => 'failing';
 
   @override
-  PaymentMode get mode => PaymentMode.URL;
+  PaymentMode get mode => PaymentMode.url;
 
   @override
   Future<PaymentResult> pay(PayRequest request) async =>

@@ -39,7 +39,7 @@ StripeProvider(
 
 ```dart
 StripeProvider(
-  mode: PaymentMode.SDK, // Force SDK mode
+  mode: PaymentMode.sdk, // Force SDK mode
 )
 ```
 
@@ -57,7 +57,7 @@ StripeProvider(
 
 ```dart
 StripeProvider(
-  mode: PaymentMode.URL, // Force URL mode
+  mode: PaymentMode.url, // Force URL mode
 )
 ```
 
@@ -70,7 +70,7 @@ void checkPlatform() {
   final info = PlatformDetector.getPlatformDefaults();
   
   print('Platform: ${info['platform']}');        // "iOS", "Web", etc.
-  print('Default mode: ${info['defaultMode']}'); // PaymentMode.SDK or PaymentMode.URL
+  print('Default mode: ${info['defaultMode']}'); // PaymentMode.sdk or PaymentMode.url
   print('Supports SDK: ${info['supportsSdk']}'); // true/false
   print('Supports URL: ${info['supportsUrl']}'); // always true
 }
@@ -84,13 +84,13 @@ void checkPlatform() {
 // Force URL mode on all platforms (including mobile)
 StripeProvider(
   publishableKey: 'pk_test_...',
-  mode: PaymentMode.URL,
+  mode: PaymentMode.url,
 )
 
 // Force SDK mode (will error on web/desktop)
 StripeProvider(
   publishableKey: 'pk_test_...',
-  mode: PaymentMode.SDK, // Only works on mobile
+  mode: PaymentMode.sdk, // Only works on mobile
 )
 ```
 
@@ -100,11 +100,11 @@ StripeProvider(
 try {
   final provider = StripeProvider(
     publishableKey: 'pk_test_...',
-    mode: PaymentMode.SDK, // Might not be supported
+    mode: PaymentMode.sdk, // Might not be supported
   );
 } catch (e) {
   print('Error: $e');
-  // UnsupportedError: Payment mode PaymentMode.SDK is not supported on Web.
+  // UnsupportedError: Payment mode PaymentMode.sdk is not supported on Web.
 }
 ```
 
@@ -126,7 +126,7 @@ StripeProvider(
 // Consistent experience across all platforms
 StripeProvider(
   publishableKey: 'pk_test_...',
-  mode: PaymentMode.URL,
+  mode: PaymentMode.url,
 )
 ```
 
@@ -136,7 +136,7 @@ StripeProvider(
 // Will crash on web/desktop platforms
 StripeProvider(
   publishableKey: 'pk_test_...',
-  mode: PaymentMode.SDK, // Don't force SDK
+  mode: PaymentMode.sdk, // Don't force SDK
 )
 ```
 

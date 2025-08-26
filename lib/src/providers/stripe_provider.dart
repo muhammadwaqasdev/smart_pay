@@ -6,10 +6,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/pay_request.dart';
 import '../models/payment_flow_mode.dart';
-import '../models/url_config.dart';
+import '../models/payment_mode.dart';
 import '../models/payment_result.dart';
 import '../models/stripe_mode.dart';
-import '../models/payment_mode.dart';
+import '../models/url_config.dart';
 import '../models/url_handling_mode.dart';
 import '../platform/platform_detector.dart';
 import 'payment_provider_plugin.dart';
@@ -67,7 +67,7 @@ class StripeProvider extends PaymentProviderPlugin {
       if (!PlatformDetector.isPaymentModeSupported(override)) {
         throw UnsupportedError(
             'Payment mode $override is not supported on ${PlatformDetector.getCurrentPlatformName()}. '
-            'Supported modes: ${PlatformDetector.isPaymentModeSupported(PaymentMode.SDK) ? "SDK, " : ""}URL');
+            'Supported modes: ${PlatformDetector.isPaymentModeSupported(PaymentMode.sdk) ? "SDK, " : ""}URL');
       }
       return override;
     }
@@ -85,9 +85,9 @@ class StripeProvider extends PaymentProviderPlugin {
   /// Get default display name based on mode
   String _getDefaultDisplayName() {
     switch (_selectedMode) {
-      case PaymentMode.SDK:
+      case PaymentMode.sdk:
         return 'Stripe (In-App)';
-      case PaymentMode.URL:
+      case PaymentMode.url:
         return 'Stripe (Web)';
     }
   }
@@ -98,10 +98,10 @@ class StripeProvider extends PaymentProviderPlugin {
   /// Internal Stripe-specific mode for routing
   StripeMode get stripeMode {
     switch (_selectedMode) {
-      case PaymentMode.SDK:
-        return StripeMode.SDK;
-      case PaymentMode.URL:
-        return StripeMode.URL;
+      case PaymentMode.sdk:
+        return StripeMode.paymentSheet;
+      case PaymentMode.url:
+        return StripeMode.paymentLink;
     }
   }
 
@@ -120,9 +120,9 @@ class StripeProvider extends PaymentProviderPlugin {
 
       // Route to appropriate handler based on provider mode
       switch (_selectedMode) {
-        case PaymentMode.SDK:
+        case PaymentMode.sdk:
           return await _handlePaymentSheet(request);
-        case PaymentMode.URL:
+        case PaymentMode.url:
           return await _handleURL(request);
       }
     } on fs.StripeException catch (e) {

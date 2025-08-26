@@ -61,7 +61,7 @@ StripeProvider(
 StripeProvider(
   publishableKey: 'pk_test_...',
   secretKey: 'sk_test_...',
-  mode: PaymentMode.URL, // Always uses web payment
+  mode: PaymentMode.url, // Always uses web payment
 )
 ```
 
@@ -101,7 +101,7 @@ StripeProvider(
 StripeProvider(
   publishableKey: 'pk_test_...',
   secretKey: 'sk_test_...',
-  mode: PaymentMode.SDK, // Force in-app payment UI
+  mode: PaymentMode.sdk, // Force in-app payment UI
 )
 ```
 
@@ -114,7 +114,7 @@ StripeProvider(
 StripeProvider(
   publishableKey: 'pk_test_...',
   secretKey: 'sk_test_...',
-  mode: PaymentMode.URL, // Force web-based payment
+  mode: PaymentMode.url, // Force web-based payment
 )
 ```
 
@@ -216,7 +216,7 @@ SmartPay.configure(SmartPayConfig(
       publishableKey: 'pk_test_...',
       secretKey: 'sk_test_...',
       displayName: 'Pay with Promo Code',
-      mode: PaymentMode.URL,
+      mode: PaymentMode.url,
       urlConfig: StripeURLConfig(
         allowPromotionCodes: true,
         urlHandlingMode: UrlHandlingMode.autoRedirect,

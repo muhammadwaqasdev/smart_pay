@@ -36,7 +36,7 @@ Future<void> main() async {
           publishableKey: publishableKey,
           secretKey: secretKey,
           displayName: 'Pay Online',
-          mode: PaymentMode.URL, // Force web payment
+          mode: PaymentMode.url, // Force web payment
           urlConfig: StripeURLConfig(
             successUrl: 'https://example.com/success',
             cancelUrl: 'https://example.com/cancel',

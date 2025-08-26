@@ -19,7 +19,7 @@ void main() {
     });
 
     test('URL mode is always supported', () {
-      expect(PlatformDetector.isPaymentModeSupported(PaymentMode.URL), true);
+      expect(PlatformDetector.isPaymentModeSupported(PaymentMode.url), true);
     });
 
     test('platform name is not empty', () {
@@ -43,7 +43,7 @@ void main() {
           () => StripeProvider(
                 publishableKey: 'pk_test_123',
                 secretKey: 'sk_test_123',
-                mode: PaymentMode.URL, // URL is supported on all platforms
+                mode: PaymentMode.url, // URL is supported on all platforms
               ),
           returnsNormally);
     });
@@ -52,10 +52,10 @@ void main() {
       final provider = StripeProvider(
         publishableKey: 'pk_test_123',
         secretKey: 'sk_test_123',
-        mode: PaymentMode.URL,
+        mode: PaymentMode.url,
       );
 
-      expect(provider.mode, PaymentMode.URL);
+      expect(provider.mode, PaymentMode.url);
     });
 
     test('custom display name override works', () {
@@ -73,7 +73,7 @@ void main() {
       final urlProvider = StripeProvider(
         publishableKey: 'pk_test_123',
         secretKey: 'sk_test_123',
-        mode: PaymentMode.URL,
+        mode: PaymentMode.url,
         // No custom displayName provided
       );
 
